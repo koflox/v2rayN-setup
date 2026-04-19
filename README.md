@@ -7,17 +7,27 @@
 - Российские сервисы (VK, Яндекс, Mail.ru и др.) → напрямую
 - Всё остальное → напрямую по умолчанию
 
+## Оглавление
+
+- [1. Geo-файлы](#1-geo-файлы)
+  - [1.1 Ссылки на файлы](#11-ссылки-на-файлы)
+- [2. Routing правила](#2-routing-правила)
+- [3. v2rayN (Windows)](#3-v2rayn-windows)
+  - [3.1 Загрузка geo-файлов](#31-загрузка-geo-файлов)
+  - [3.2 Создание routing пресета](#32-создание-routing-пресета)
+  - [3.3 Применение](#33-применение)
+- [4. v2rayNG (Android)](#4-v2rayng-android)
+  - [4.1 Загрузка geo-файлов](#41-загрузка-geo-файлов)
+  - [4.2 Настройка routing](#42-настройка-routing)
+  - [4.3 Настройка per-app](#43-настройка-per-app)
+
 ---
 
-## Шаг 1 — Скачать geo-файлы
+## 1. Geo-файлы
 
 Стандартные файлы от Xray не содержат российских категорий. Нужны файлы от [runetfreedom/russia-v2ray-rules-dat](https://github.com/runetfreedom/russia-v2ray-rules-dat) — обновляются каждые 6 часов.
 
-Скачать (всегда последняя версия):
-- `https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/geoip.dat`
-- `https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/geosite.dat`
-
-### Используемые категории
+Доступные категории:
 
 | Категория | Содержимое |
 |---|---|
@@ -27,90 +37,17 @@
 | `geoip:ru` | Российские IP-адреса |
 | `geoip:yandex` | IP-адреса Яндекса |
 
-> ⚠️ Файлы не обновляются автоматически. Рекомендуется периодически скачивать свежие версии по тем же ссылкам.
+### 1.1 Ссылки на файлы
+
+Всегда актуальная версия:
+- `https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/geoip.dat`
+- `https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/geosite.dat`
 
 ---
 
-## v2rayN (Windows)
+## 2. Routing правила
 
-### Установка geo-файлов
-
-Положить скачанные файлы в подпапку `bin\` внутри папки v2rayN:
-
-```
-X:\Programs\v2rayN\bin\geoip.dat
-X:\Programs\v2rayN\bin\geosite.dat
-```
-
-> ⚠️ Файлы должны быть именно в `bin\`, а не в корневой папке. Иначе Xray выдаст ошибку при старте.
-
-### Создание routing пресета
-
-**Settings → Routing Settings → Add**
-
-В открывшемся Rule Settings указать:
-
-| Поле | Значение |
-|---|---|
-| Remarks | Russia Bypass |
-
-### Добавление правил
-
-Нажать **Add Rule** и добавить два правила. Порядок важен — правила применяются сверху вниз.
-
-**Правило 1 — заблокированные в России → proxy:**
-
-| Поле | Значение |
-|---|---|
-| Remarks | Proxy for blocked |
-| outboundTag | proxy |
-| Domain | `geosite:ru-blocked` |
-
-**Правило 2 — всё остальное → direct:**
-
-| Поле | Значение |
-|---|---|
-| Remarks | Direct all others |
-| outboundTag | direct |
-| Domain | `regexp:.*` |
-
-> ⚠️ Правило `regexp:.*` должно стоять последним. Порядок настраивается через опциональное меню на правую кнопку мыши или горячими клавишами.
-
-### Применение
-
-1. Нажать **Confirm**
-2. В главном окне внизу в поле **Routing** выбрать "Russia Bypass"
-3. Нажать **Reload**
-
-### Проверка (логи в нижней части окна)
-
-| Сайт | Ожидаемый результат |
-|---|---|
-| vk.com, yandex.ru, mail.ru | `[socks -> direct]` |
-| youtube.com, instagram.com | `[socks -> proxy]` |
-
----
-
-## v2rayNG (Android)
-
-### Установка geo-файлов
-
-Скопировать скачанные файлы в папку приложения:
-
-```
-Android/data/com.v2ray.ang/files/assets/geoip.dat
-Android/data/com.v2ray.ang/files/assets/geosite.dat
-```
-
-> ⚠️ Если доступ к `Android/data/` ограничен (возможно на Android 11+). Для копирования нужен файловый менеджер с расширенным доступом — например MiXplorer или MT Manager.
-
-### Настройка routing
-
-Сэндвич меню → **Settings → Routing settings**
-
-> Опционально: отключить дефолтные китайские правила если они есть.
-
-Добавить два правила через **+** (порядок настраивается перетаскиванием):
+Правила применяются сверху вниз — порядок важен. Для корректной работы правило с `regexp:.*` должно стоять последним.
 
 **Правило 1 — заблокированные в России → proxy:**
 
@@ -128,10 +65,98 @@ Android/data/com.v2ray.ang/files/assets/geosite.dat
 | Domain | `regexp:.*` |
 | Outbound | direct |
 
+Ожидаемый результат после настройки:
+
+| Сайт | Маршрут |
+|---|---|
+| vk.com, yandex.ru, mail.ru | `direct` |
+| youtube.com, instagram.com | `proxy` |
+
+---
+
+## 3. v2rayN (Windows)
+
+Скачать клиент: [github.com/2dust/v2rayN/releases](https://github.com/2dust/v2rayN/releases)
+
+### 3.1 Загрузка geo-файлов
+
+Скачать файлы по ссылкам из [раздела 1.1](#11-ссылки-на-файлы) и положить в подпапку `bin\` внутри папки v2rayN:
+
+```
+X:\Programs\v2rayN\bin\geoip.dat
+X:\Programs\v2rayN\bin\geosite.dat
+```
+
+> ⚠️ Файлы должны быть именно в `bin\`, а не в корневой папке. Иначе Xray выдаст ошибку при старте.
+
+> ⚠️ Файлы не обновляются автоматически. Рекомендуется периодически скачивать свежие версии по тем же ссылкам.
+
+### 3.2 Создание routing пресета
+
+**Settings → Routing Settings → Add**
+
+В открывшемся Rule Settings указать Remarks: `Russia Bypass`.
+
+Добавить правила через **Add Rule** согласно [разделу 2](#2-routing-правила). Порядок настраивается через поле Sort или перетаскиванием.
+
+### 3.3 Применение
+
+1. Нажать **Confirm**
+2. В главном окне внизу в поле **Routing** выбрать "Russia Bypass"
+3. Нажать **Reload**
+
+Логи подключений отображаются в нижней части главного окна.
+
+---
+
+## 4. v2rayNG (Android)
+
+Скачать клиент: [github.com/2dust/v2rayNG/releases](https://github.com/2dust/v2rayNG/releases) (версия 2.0.18+)
+
+### 4.1 Загрузка geo-файлов
+
+Сэндвич меню → **Asset files** → **+** → **Add URL**
+
+Добавить два ассета:
+
+**geosite.dat:**
+
+| Поле | Значение |
+|---|---|
+| Remarks | `geosite.dat` |
+| URL | `https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/geosite.dat` |
+
+**geoip.dat:**
+
+| Поле | Значение |
+|---|---|
+| Remarks | `geoip.dat` |
+| URL | `https://raw.githubusercontent.com/runetfreedom/russia-v2ray-rules-dat/release/geoip.dat` |
+
+После добавления нажать иконку облака (↓) для загрузки файлов.
+
+> ⚠️ Название в поле Remarks должно точно совпадать с именем существующего файла — иначе файлы не перезапишутся.
+
+**Альтернатива — ручное копирование через ПК:**
+Подключить телефон по USB и скопировать файлы из [раздела 1.1](#11-ссылки-на-файлы) напрямую в:
+
+```
+Android/data/com.v2ray.ang/files/assets/geoip.dat
+Android/data/com.v2ray.ang/files/assets/geosite.dat
+```
+
+### 4.2 Настройка routing
+
+Сэндвич меню → **Settings → Routing settings**
+
+Отключить дефолтные китайские правила если они есть.
+
+Добавить правила через **+** согласно [разделу 2](#2-routing-правила). Порядок настраивается перетаскиванием.
+
 Включить routing (toggle вверху) и переподключиться.
 
-### Проверка (логи)
+Логи: сэндвич меню → **Log**. Включить если пусто: Settings → **Log Level** → `warning` или `info`.
 
-Сэндвич меню → **Logcat**
+### 4.3 Настройка per-app
 
-Включить логирование если пусто: Settings → **Log Level** → `warning` или `info`.
+Сэндвич меню → **Per-app settings** позволяет выбрать отдельные приложения которые будут идти через VPN или напрямую, независимо от routing правил.
